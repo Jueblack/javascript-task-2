@@ -97,14 +97,6 @@ const showAllContacts = (fullBook) =>
 const findContacts = (fullBook, findBy) =>
     showAllContacts(fullBook).filter((element) => element.includes(findBy));
 
-const deleteContacts = (fullBook, findAndDelete) => {
-    const deletedContacts = findContacts(fullBook, findAndDelete);
-
-    fullBook = fullBook.filter((str) => !deleteContacts.includes(str));
-
-    return deletedContacts.length;
-};
-
 exports.findAndRemove = function (query) {
     const deletedContacts = findContacts(phoneBook, query);
 
