@@ -73,8 +73,6 @@ exports.update = function (phone, name, email) {
  * @param {String} query
  */
 
-const result = [];
-
 const formatContact = (contact) => {
     return {
         phone:
@@ -91,7 +89,7 @@ const showAllContacts = (fullBook) =>
     fullBook
         .map(formatContact)
         .map((contact) =>
-            [contact.name, contact.phone, contact.email ? contact.email : ""]
+            [contact.name, contact.phone, contact.email]
                 .filter(Boolean)
                 .join(", ")
         );
@@ -108,7 +106,16 @@ const deleteContacts = (fullBook, findAndDelete) => {
 };
 
 exports.findAndRemove = function (query) {
-    return deleteContacts(phoneBook, query);
+    const deletedContacts = findContacts(phoneBook, query);
+
+    phoneBook = phoneBook.filter(
+        ({ phone, name, email }) =>
+            !deletedContacts.includes(
+                [name, phone, email].filter(Boolean).join(", ")
+            )
+    );
+
+    return deletedContacts.length;
 };
 
 /**
@@ -118,20 +125,19 @@ exports.findAndRemove = function (query) {
 
 exports.find = function (query) {
     if (!query) {
-        return result;
+        return "";
     }
-    const copyPhoneBook = phoneBook.slice(0);
-    copyPhoneBook.sort((a, b) => a.name.localeCompare(b.name));
+    let result;
     switch (query) {
         case "*":
-            return showAllContacts(copyPhoneBook);
-
-        case " ":
-            return result;
-
+            result = showAllContacts(phoneBook);
+            break;
         default:
-            return findContacts(copyPhoneBook, query);
+            result = findContacts(phoneBook, query);
+            break;
     }
+
+    return result.sort();
 };
 
 /**
