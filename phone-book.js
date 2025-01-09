@@ -23,40 +23,16 @@ var phoneBook = [];
 const phoneValidator = /\b\d{10}\b/g;
 const nameValidator = /^[А-Я || ё][а-я || ё]*$/gm;
 
-const isInputValid = (validPhone, validName) => {
-    try {
-        if (!validPhone.match(phoneValidator)) {
-            return false;
-        }
-        if (!validName.match(nameValidator)) {
-            return false;
-        }
-    } catch (err) {
-        return false;
-    }
+const isInputValid = (phone, name) =>
+    phone && name && phone.match(phoneValidator) && name.match(nameValidator);
 
-    return true;
-};
-
-const isContactExist = (contactPhone, contactName) => {
-    try {
-        for (let i = 0; i < phoneBook.length; i++) {
-            let contact = phoneBook[i];
-            let values = Object.values(contact);
-            // eslint-disable-next-line max-depth
-            if (values.includes(contactPhone) || values.includes(contactName)) {
-                return false;
-            }
-        }
-    } catch (err) {
-        return false;
-    }
-
-    return true;
-};
+const isContactExist = (phone, name) =>
+    phoneBook.some(
+        (contact) => contact.phone === phone || contact.name === name
+    );
 
 exports.add = function (phone, name, email) {
-    if (isInputValid(phone, name) && isContactExist(phone, name)) {
+    if (isInputValid(phone, name) && !isContactExist(phone, name)) {
         phoneBook.push({
             phone,
             name,
