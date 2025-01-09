@@ -75,60 +75,36 @@ exports.update = function (phone, name, email) {
 
 const result = [];
 
-const rearangePhoneBook = (index, testBook) => {
-    const copyElement = { ...testBook[index] };
-    copyElement.phone =
-        `+7 (${copyElement.phone.slice(0, 3)})` +
-        ` ${copyElement.phone.slice(3, 6)}` +
-        `-${copyElement.phone.slice(6, 8)}` +
-        `-${copyElement.phone.slice(8, 10)}`;
-    const rearrengedObject = {};
-    rearrengedObject.name = copyElement.name;
-    rearrengedObject.phone = copyElement.phone;
-    if (copyElement.email !== undefined) {
-        rearrengedObject.email = copyElement.email;
-    }
-    let values = Object.values(rearrengedObject);
-
-    return values;
+const formatContact = (contact) => {
+    return {
+        phone:
+            `+7 (${contact.phone.slice(0, 3)})` +
+            ` ${contact.phone.slice(3, 6)}` +
+            `-${contact.phone.slice(6, 8)}` +
+            `-${contact.phone.slice(8, 10)}`,
+        name: contact.name,
+        ...(contact.email ? { email: contact.email } : {}),
+    };
 };
 
-const showAllContacts = (fullBook) => {
-    const copyResult = [...result];
-    for (let i = 0; i < fullBook.length; i++) {
-        copyResult.push(rearangePhoneBook(i, fullBook).join(", "));
-    }
+const showAllContacts = (fullBook) =>
+    fullBook
+        .map(formatContact)
+        .map((contact) =>
+            [contact.name, contact.phone, contact.email ? contact.email : ""]
+                .filter(Boolean)
+                .join(", ")
+        );
 
-    return copyResult;
-};
-
-const findContacts = (fullBook, findBy) => {
-    const copyResult = [...result];
-    for (let i = 0; i < fullBook.length; i++) {
-        if (
-            rearangePhoneBook(i, fullBook).some((str) => str.includes(findBy))
-        ) {
-            copyResult.push(rearangePhoneBook(i, fullBook).join(", "));
-        }
-    }
-
-    return copyResult;
-};
+const findContacts = (fullBook, findBy) =>
+    showAllContacts(fullBook).filter((element) => element.includes(findBy));
 
 const deleteContacts = (fullBook, findAndDelete) => {
-    for (let i = 0; i < fullBook.length; i++) {
-        if (
-            rearangePhoneBook(i, fullBook).some((str) =>
-                str.includes(findAndDelete)
-            )
-        ) {
-            phoneBook.splice(i, 1, "");
-        }
-    }
-    let deleteCounter = phoneBook.filter((item) => !item).length;
-    phoneBook = phoneBook.filter((item) => item);
+    const deletedContacts = findContacts(fullBook, findAndDelete);
 
-    return deleteCounter;
+    fullBook = fullBook.filter((str) => !deleteContacts.includes(str));
+
+    return deletedContacts.length;
 };
 
 exports.findAndRemove = function (query) {
