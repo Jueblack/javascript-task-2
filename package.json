@@ -3,7 +3,7 @@
   "main": "phone-book.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "eslint . && mocha *.spec.js"
+    "test": "eslint . && mocha --full-trace *.spec.js"
   },
   "dependencies": {
     "eslint": "4.8.0",
